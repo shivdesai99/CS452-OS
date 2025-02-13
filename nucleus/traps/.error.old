@@ -1,0 +1,12 @@
+
+There is an error in the documentation:
+
+Sem_OP:
+
+D4 contains the address of the vpop vector, and D3 contains the number of
+vpops in the vector.
+
+
+This is incorrect.  D4 contains the address, and D3 contains the number.
+
+

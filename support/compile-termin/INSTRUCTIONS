@@ -1,0 +1,17 @@
+
+Here are the instructions to cross-compile your own test program
+and to create a termin0 file.
+
+1.  Copy this entire directory to your directory:
+
+/home/cs580000/share/hoca/support/compile-termin
+
+2.  Modify t0.c
+
+3.  Type "make".
+
+4.  Copy termin0 to your support/part1 (or part2) directory.
+
+5.  Run emacsim and the custom termin0 will be used
+
+

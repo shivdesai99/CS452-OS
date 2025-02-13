@@ -1,0 +1,67 @@
+child1 starts
+child1 starts
+child1 starts
+child1 starts
+child2 starts
+child2 starts
+child2 starts
+child2 starts
+divide by zero
+first incarnation of p4 starts
+gchild1 starts
+gchild1 starts
+gchild1 starts
+gchild1 starts
+gchild2 starts
+gchild2 starts
+gchild2 starts
+gchild2 starts
+gchild3 starts
+gchild3 starts
+gchild3 starts
+gchild3 starts
+gchild4 starts
+gchild4 starts
+gchild4 starts
+gchild4 starts
+high level SYS call from kernel mode process
+high level SYS call from user mode process
+memory management trap
+nucleus: normal termination
+p1 finishes OK
+p1 knows p5 ended
+p1 v(testsem)
+p2 is OK
+p2 starts
+p2 v's successfully
+p2 was started
+p3 - CPU time correctly maintained
+p3 - WAITCLOCK OK
+p3 is started
+p4 is OK
+p5 starts
+p6  iteration: 0 , system time   63396 , cpu-time    1320
+p6  iteration: 1 , system time  119875 , cpu-time    5533
+p6  iteration: 2 , system time  580830 , cpu-time  104240
+p6  iteration: 3 , system time  612700 , cpu-time  108081
+p6  iteration: 4 , system time  783376 , cpu-time  182082
+p6  iteration: 5 , system time  813911 , cpu-time  185934
+p6  iteration: 6 , system time  984598 , cpu-time  259946
+p6 starts
+p7 starts
+p7: 0 
+p7: 1 
+p7: 2 
+p7: 3 
+p7: 4 
+p7: 5 
+p7: 6 
+p7: 7 
+p7: 8 
+p7: 9 
+p8root starts
+p8root starts
+p8root starts
+p8root starts
+privileged instruction
+second incarnation of p4 starts
