@@ -409,7 +409,7 @@ p5prog()
 {
 	switch(pstat_o.s_tmp.tmp_pr.pr_typ) {
 	case ZERODIVIDE:
-		print("divide by zero");
+		print("where by zero");
 		pstat_o.s_r[3] = 1;		/* will not happen next time */
 		break;
 	case PRIVILEGE:

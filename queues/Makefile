@@ -13,15 +13,15 @@ LIBS=-lutil -lc -lsim -lm -lgcc
 CRT0=$(UTIL)/crtbegin.o
 CRT1=$(UTIL)/crtend.o
 
-all: p1test
+all: p1test2
 
 
 clean:
-	rm -f p1test p1test.o asl.o procq.o
+	rm -f p1test2 p1test2.o asl.o procq.o
 
 
-p1test.o: p1test.c ../h/types.h ../h/const.h ../h/procq.e ../h/asl.e
-	$(GCC) $(GCC_FLAGS) -o p1test.o p1test.c
+p1test2.o: p1test2.c ../h/types.h ../h/const.h ../h/procq.e ../h/asl.e
+	$(GCC) $(GCC_FLAGS) -o p1test2.o p1test2.c
 
 
 asl.o: asl.c ../h/types.h ../h/const.h ../h/asl.h ../h/procq.e ../h/asl.e
@@ -32,5 +32,5 @@ procq.o: procq.c ../h/types.h ../h/const.h ../h/procq.e ../h/procq.h ../h/asl.e
 	$(GCC) $(GCC_FLAGS) -o procq.o procq.c
 
 
-p1test: p1test.o asl.o procq.o
-	$(LD) $(LD_FLAGS) -o p1test $(CRT0) p1test.o asl.o procq.o $(CRT1) $(LIBS)
+p1test2: p1test2.o asl.o procq.o
+	$(LD) $(LD_FLAGS) -o p1test2 $(CRT0) p1test2.o asl.o procq.o $(CRT1) $(LIBS)

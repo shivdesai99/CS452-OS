@@ -5,6 +5,4 @@
 typedef struct vpop {
   int op;
   int *sem;
-} vpop; 
-
-
+} vpop;

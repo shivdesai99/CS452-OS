@@ -1,5 +1,6 @@
 #include "procq.h"
 
+extern panic();
 extern void initProc();
 extern proc_t* allocProc();
 extern void freeProc(proc_t *p);

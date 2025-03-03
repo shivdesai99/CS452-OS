@@ -83,6 +83,9 @@ void removeSema(semd_t *sema) {
             sema->s_next->s_prev = sema->s_prev;
         }
     }
+    sema->s_semAdd = (int *) ENULL;
+    sema->s_link.next = (proc_t *) ENULL;
+    sema->s_link.index = ENULL;
     sema->s_next = semdFree_h;
     sema->s_prev = (semd_t *) ENULL;
     semdFree_h = sema;
@@ -161,12 +164,16 @@ proc_t* outBlocked(proc_t *p) {
             }
             if (outProc(&(sema->s_link), p) == p) {
                 found = TRUE;
-                addOrResetSemvec(p, p->semvec[i], 0);
+                (*sema->s_semAdd)++;
+                // addOrResetSemvec(p, p->semvec[i], 0); // update to directly set p_semvec[i] = (int *) ENULL
                 if (sema->s_link.next == (proc_t *) ENULL) {
                     removeSema(sema);
                 }
             }
         }
+    }
+    for (i = 0; i < SEMMAX; i++) {
+        p->semvec[i] = (int *) ENULL;
     }
     return (found) ? p : (proc_t *) ENULL;
 }
