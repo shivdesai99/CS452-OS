@@ -21,11 +21,11 @@ all: nucleus
 
 
 clean:
-	rm -f nucleus main.o syscall.o trap.o int.o p1.2.o
+	rm -f nucleus main.o syscall.o trap.o int.o p1.o
 
 
-nucleus: main.o  syscall.o trap.o p1.2.o int.o $(QUEUEDIR)/procq.o $(QUEUEDIR)/asl.o
-	$(LD) $(LD_FLAGS) -o nucleus $(CRT0) main.o syscall.o trap.o int.o $(QUEUEDIR)/procq.o $(QUEUEDIR)/asl.o p1.2.o $(CRT1) $(LIBS)
+nucleus: main.o  syscall.o trap.o p1.o int.o $(QUEUEDIR)/procq.o $(QUEUEDIR)/asl.o
+	$(LD) $(LD_FLAGS) -o nucleus $(CRT0) main.o syscall.o trap.o int.o $(QUEUEDIR)/procq.o $(QUEUEDIR)/asl.o p1.o $(CRT1) $(LIBS)
 
 
 main.o: main.c ../../h/const.h ../../h/types.h ../../h/procq.e ../../h/asl.e
@@ -44,5 +44,5 @@ int.o: $(INTDIR)/int.c ../../h/const.h ../../h/types.h ../../h/procq.e ../../h/a
 	$(GCC) $(GCC_FLAGS) -o int.o $(INTDIR)/int.c
 
 
-p1.2.o: p1.2.c ../../h/const.h ../../h/types.h
-	$(GCC) $(GCC_FLAGS) -o p1.2.o p1.2.c
+p1.o: p1.c ../../h/const.h ../../h/types.h
+	$(GCC) $(GCC_FLAGS) -o p1.o p1.c

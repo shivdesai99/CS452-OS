@@ -23,16 +23,9 @@ typedef struct proc_t {
     state_t *mm_new;
     state_t *sys_old;
     state_t *sys_new;
+    long start_time;
     int cpu_time;
 
 } proc_t;
 
 #endif
-
-// void initProc();
-// proc_t* allocProc();
-// void freeProc(proc_t *p);
-// void insertProc(proc_link *tp, proc_t *p);
-// proc_t* headQueue(proc_link tp);
-// proc_t* outProc(proc_link *tp, proc_t *p);
-// proc_t* removeProc(proc_link *tp);

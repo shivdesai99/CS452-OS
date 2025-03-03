@@ -1,10 +1,40 @@
 /* This code is my own work, it was written without consulting code written by other students current or previous or using anyAItools Shiv Desai */
+
+/* 
+ * File: procq.c
+ * Description: This file implements the management of process structures and the 
+ *              process queue mechanism. It includes functions to initialize the 
+ *              process table, allocate and free process entries, and manipulate 
+ *              process queues by inserting, removing, and clearing process links.
+ *
+ * Dependencies: 
+ *    - const.h: Contains constant definitions (e.g., MAXPROC, SEMMAX, ENULL)
+ *    - types.h: Contains type definitions including proc_t and state_t
+ *    - procq.h: Contains definitions for process queue links (proc_link)
+ */
+
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/procq.h"
+
+/* Global process table and free list pointer */
 proc_t procTable[MAXPROC];
 proc_t *procFree_h;
 
+/*
+ * Function: initProc
+ * ------------------
+ * Initializes the process table.
+ *
+ * Description:
+ *   - Iterates over the procTable array to set default values for each process,
+ *     including zeroing the queue count, clearing parent/child/sibling pointers,
+ *     and initializing state pointers and CPU time values.
+ *   - For each process, initializes the array of proc_link structures (p_link) 
+ *     and the semaphore vector (semvec) to indicate that no links or semaphores are in use.
+ *   - Builds the free list of processes by linking all processes using the first
+ *     element (p_link[0]) of each proc_t.
+ */
 void initProc() {
     int i, j;
     for (i = 0; i < MAXPROC; i++) {
@@ -19,7 +49,7 @@ void initProc() {
 		procTable[i].sys_old = (state_t *) ENULL;
 		procTable[i].sys_new = (state_t *) ENULL;
         procTable[i].start_time = 0;
-        procTable[i].total_cpu = 0;
+        procTable[i].cpu_time = 0;
         
         for (j = 0; j < SEMMAX; j++) {
             procTable[i].p_link[j].next = (proc_t *) ENULL;
@@ -29,6 +59,7 @@ void initProc() {
         
     }
 
+    /* Build the free list by linking all procTable entries via p_link[0] */
     procFree_h = &procTable[0];
     for (i = 0; i < MAXPROC - 1; i++) {
         procTable[i].p_link[0].next = &procTable[i+1];
@@ -38,6 +69,19 @@ void initProc() {
     procTable[19].p_link[0].index = 0;
 }
 
+/*
+ * Function: allocProc
+ * -------------------
+ * Allocates a process from the free list.
+ *
+ * Returns:
+ *    - A pointer to an available proc_t from the free list.
+ *    - ENULL if no free process is available.
+ *
+ * Description:
+ *   - Retrieves the first process from the free list (procFree_h),
+ *     updates the free list pointer, and clears the process's first link.
+ */
 proc_t* allocProc() {
     if (procFree_h == (proc_t *) ENULL) {
         return (proc_t *) ENULL;
@@ -48,6 +92,19 @@ proc_t* allocProc() {
     return p;
 }
 
+/*
+ * Function: freeProc
+ * ------------------
+ * Returns a process to the free list.
+ *
+ * Parameters:
+ *    - p: Pointer to the proc_t structure to be freed.
+ *
+ * Description:
+ *   - Resets all fields of the given process to default values,
+ *     including process links, state pointers, and CPU time counters.
+ *   - Adds the process back to the head of the free list.
+ */
 void freeProc(proc_t *p) {
     if (p == (proc_t *) ENULL) {
         return;
@@ -63,7 +120,7 @@ void freeProc(proc_t *p) {
     p->sys_old = (state_t *) ENULL;
     p->sys_new = (state_t *) ENULL;
     p->start_time = 0;
-    p->total_cpu = 0;
+    p->cpu_time = 0;
     int i;
     for (i = 0; i < SEMMAX; i++) {
         p->p_link[i].next = (proc_t *) ENULL;
@@ -73,6 +130,25 @@ void freeProc(proc_t *p) {
     procFree_h = p;
 }
 
+/*
+ * Function: insertProc
+ * ----------------------
+ * Inserts a process into a process queue.
+ *
+ * Parameters:
+ *    - tp: Pointer to a proc_link structure representing the tail pointer of a queue.
+ *    - p:  Pointer to the process to be inserted.
+ *
+ * Description:
+ *   - Checks for valid (non-NULL) parameters.
+ *   - Verifies that the process has not exceeded the maximum allowed queue links (SEMMAX).
+ *   - Finds an available slot in the process's p_link array.
+ *   - If the queue is empty (tp->next is ENULL), initializes it with process p.
+ *   - Otherwise, appends process p to the end of the queue by updating the appropriate
+ *     linking pointers and indices.
+ *   - Panics if any parameter is NULL, if the process has reached max queues, or if no
+ *     available link slot is found.
+ */
 void insertProc(proc_link *tp, proc_t *p) {
     if (tp == (proc_link *) ENULL || p == (proc_t *) ENULL) {
         panic("insertProc: Null pointer parameter");
@@ -110,6 +186,22 @@ void insertProc(proc_link *tp, proc_t *p) {
     }
 }
 
+/*
+ * Function: headQueue
+ * -------------------
+ * Retrieves the head process of a queue.
+ *
+ * Parameters:
+ *    - tp: A proc_link structure representing the queue.
+ *
+ * Returns:
+ *    - Pointer to the process at the head of the queue.
+ *    - ENULL if the queue is empty.
+ *
+ * Description:
+ *   - Uses the provided proc_link structure to locate the head of the queue.
+ *   - Note that this function does not remove the process from the queue.
+ */
 proc_t* headQueue(proc_link tp) {
     if (tp.next == (proc_t *) ENULL) {
         return (proc_t *) ENULL;
@@ -117,6 +209,19 @@ proc_t* headQueue(proc_link tp) {
     return tp.next->p_link[tp.index].next;
 }
 
+/*
+ * Function: clearProcLink
+ * -----------------------
+ * Clears a specific process link from a process's link array.
+ *
+ * Parameters:
+ *    - p:  Pointer to the process whose link is to be cleared.
+ *    - pl: Pointer to the specific proc_link within the process that should be cleared.
+ *
+ * Description:
+ *   - Iterates through the p_link array of the process.
+ *   - When the matching link (by address) is found, resets its next pointer and index to ENULL.
+ */
 void clearProcLink(proc_t *p, proc_link *pl) {
     int i;
     for (i = 0; i < SEMMAX; i++) {
@@ -127,6 +232,26 @@ void clearProcLink(proc_t *p, proc_link *pl) {
         }
     }
 }
+
+/*
+ * Function: outProc
+ * -----------------
+ * Removes a specified process from a process queue.
+ *
+ * Parameters:
+ *    - tp: Pointer to the proc_link structure representing the queue.
+ *    - p:  Pointer to the process to be removed.
+ *
+ * Returns:
+ *    - Pointer to the removed process if successful.
+ *    - ENULL if the process is not found in the queue.
+ *
+ * Description:
+ *   - Traverses the queue starting from the tail to locate process p.
+ *   - Updates the linking pointers to remove process p from the queue.
+ *   - Handles the special case where the queue contains only one process.
+ *   - Decrements the process's queue count (qcount) and clears its corresponding link.
+ */
 proc_t* outProc(proc_link *tp, proc_t *p) {
     if (tp == (proc_link *) ENULL || tp->next == (proc_t *) ENULL) {
         return (proc_t *) ENULL;
@@ -185,6 +310,24 @@ proc_t* outProc(proc_link *tp, proc_t *p) {
     return p;
 }
 
+/*
+ * Function: removeProc
+ * --------------------
+ * Removes the process at the head of a process queue.
+ *
+ * Parameters:
+ *    - tp: Pointer to the proc_link structure representing the queue.
+ *
+ * Returns:
+ *    - Pointer to the process removed from the head of the queue.
+ *    - ENULL if the queue is empty.
+ *
+ * Description:
+ *   - Retrieves both the tail and head processes from the queue.
+ *   - Decrements the head process's queue count.
+ *   - If the queue becomes empty after removal, resets the tail pointer.
+ *   - Otherwise, adjusts the linking pointers to maintain the integrity of the queue.
+ */
 proc_t* removeProc(proc_link *tp) {
     if (tp == (proc_link *) ENULL || tp->next == (proc_t *) ENULL)
         return (proc_t *) ENULL;
@@ -211,9 +354,23 @@ proc_t* removeProc(proc_link *tp) {
     }
 }
 
-
+/*
+ * Global error buffer for panic messages.
+ */
 char myerrbuf[128];
 
+/*
+ * Function: panic
+ * ---------------
+ * Handles unrecoverable errors by displaying an error message and halting execution.
+ *
+ * Parameters:
+ *    - s: A string containing the error message.
+ *
+ * Description:
+ *   - Copies the provided error message into the global error buffer (myerrbuf).
+ *   - Invokes a trap instruction to stop the simulator, effectively halting further execution.
+ */
 panic(s)
 register char *s;
 {
