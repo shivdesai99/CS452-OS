@@ -1,4 +1,4 @@
-/* This code is my own work, it was written without consulting code written by other students current or previous or using anyAItools Shiv Desai */
+/* This code is my own work, it was written without consulting code written by other students current or previous or using any AI tools Shiv Desai */
 
 /* 
  * File: procq.c
